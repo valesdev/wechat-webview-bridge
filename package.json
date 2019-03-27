@@ -1,0 +1,27 @@
+{
+  "name": "wechat-webview-bridge",
+  "version": "1.0.0",
+  "description": "A substitute for the official WeChat JS-SDK library.",
+  "main": "dist/wechat-webview-bridge.es.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valesdev/wechat-webview-bridge.git"
+  },
+  "author": "Yuan Chong <ychongsaytc@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/valesdev/wechat-webview-bridge/issues"
+  },
+  "homepage": "https://github.com/valesdev/wechat-webview-bridge#readme",
+  "keywords": [
+    "WeChat"
+  ],
+  "devDependencies": {
+    "rollup": "^1.7.3",
+    "rollup-plugin-buble": "^0.19.6",
+    "terser": "^3.17.0"
+  }
+}
