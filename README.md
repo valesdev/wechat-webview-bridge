@@ -66,8 +66,8 @@ await bridge.load()
         bridge.invoke({
           handlerName: 'shareTimeline',
           params: {
-            title: 'The Title Goes Here,
-            desc: 'The description goes here,
+            title: 'The Title Goes Here',
+            desc: 'The description goes here',
             img_url: 'https://www.example.com/image.jpeg',
             link: window.location.href,
             type: 'link',
