@@ -4,7 +4,7 @@
 [![Downloads](https://img.shields.io/npm/dm/wechat-webview-bridge.svg)](https://npmcharts.com/compare/wechat-webview-bridge?minimal=true)
 [![License](https://img.shields.io/npm/l/wechat-webview-bridge.svg)](https://www.npmjs.com/package/wechat-webview-bridge)
 
-A substitute for the official WeChat JS-SDK library, rewritten from `https://res.wx.qq.com/open/js/jweixin-1.4.0.js`.
+A substitute for the official WeChat JS-SDK library, rewritten from `https://res.wx.qq.com/open/js/jweixin-1.6.0.js`.
 
 ## Quick Start
 
@@ -13,9 +13,9 @@ import axios from 'axios'
 import WeChatWebViewBridge from 'wechat-webview-bridge'
 
 /**
- * function to request WeChat JS-SDK configuration parameters
+ * Function to request WeChat JS-SDK configuration parameters.
  *
- * @var function
+ * @var Function
  */
 const configHandler = async function ({ url }) {
   return axios.post('/wechat-jssdk-config', { url })
@@ -30,9 +30,9 @@ const configHandler = async function ({ url }) {
 }
 
 /**
- * list of WeChat JS-SDK API you want to grant
+ * List of WeChat JS-SDK API you want to grant.
  *
- * @var array
+ * @var Array
  */
 const apiList = [
   'menu:share:timeline',
@@ -45,7 +45,7 @@ const apiList = [
 ]
 
 /**
- * bridge instance
+ * The bridge instance.
  *
  * @var WeChatWebViewBridge
  */
@@ -102,11 +102,11 @@ await bridge.load()
 
 ## API
 
-### `new WeChatWebViewBridge()`
+### `new WeChatWebViewBridge(<options>)`
 
 | Parameter | Type | Description | Default |
 | --- | --- | --- | --- |
-| `options` | objecct | | |
+| `options` | object | | |
 | `options.configHandler` | function | Function to request WeChat JS-SDK configuration parameters. It should return a Promise and resolves with an object contains WeChat configuration parameters (`appId`, `timestamp`, `nonceStr` and `signature`). | (required) |
 | `options.apiList` | array | List of WeChat JS-SDK API names you want to grant. | `[]` |
 | `options.debug` | bool | Enable console debug output. | `false` |
@@ -120,12 +120,12 @@ Asynchronously wait for WebView bridge initialized. The returned Promise will be
 
 ### `bridge.config()`
 
-Get configuration parameters from provided function and then pass to `preVerifyJSAPI` handler immediately. The returned Promise will be resolved once the bridge is ready to use.
+Get configuration parameters from provided `configHandler` function and then pass to `preVerifyJSAPI` handler immediately. The returned Promise will be resolved once the bridge is ready to use.
 
 - Parameters: (none)
 - Returns: `Promise<any>`
 
-### `bridge.invoke()`
+### `bridge.invoke(<handerName>, [params])`
 
 Invoke WebView bridge handler. (see below for the complete handler list)
 
@@ -136,7 +136,7 @@ Invoke WebView bridge handler. (see below for the complete handler list)
 
 - Returns: `Promise<any>`
 
-### `bridge.on()`
+### `bridge.on(<handlerName>, <listener>)`
 
 Listen on WebView bridge event. (see below for the complete handler list)
 
@@ -149,13 +149,13 @@ Listen on WebView bridge event. (see below for the complete handler list)
 
 ### `bridge.urlToConfig`
 
-Get trimmed URL at the moment for WeChat WebView to configure.
+Get the trimmed URL at the moment for WeChat WebView to configure.
 
 - Returns: `string`
 
 ### `bridge.configData`
 
-Get WeChat WebView bridge configuration data.
+Get WeChat WebView bridge configuration data. The data will be fulfilled after a successful `configHandler` call.
 
 - Returns: `object`
 
@@ -201,58 +201,70 @@ Whether we are in a WeChat Dev Tools.
 
 - Returns: `boolean`
 
-### Handlers (JS calls WebView Bridge)
+### Handlers for JS calling WebView Bridge
 
-| Handler Name | Official Description | Parameters |
-| --- | --- | --- |
-| `preVerifyJSAPI` | 注入权限验证配置 | `verifyJsApiList` |
-| `checkJsApi` | 判断当前客户端版本是否支持指定 JS 接口 | `jsApiList` |
-| `imagePreview` | 预览图片接口 | `current`, `urls` |
-| `uploadImage` | 上传图片接口 | `localId`, `isShowProgressTips` |
-| `downloadImage` | 下载图片接口 | `serverId`, `isShowProgressTips` |
-| `getLocalImgData` | 获取本地图片接口 | `localId` |
-| `startRecord` | 开始录音接口 | (none) |
-| `stopRecord` | 停止录音接口 | (none) |
-| `playVoice` | 播放语音接口 | `localId` |
-| `pauseVoice` | 暂停播放接口 | `localId` |
-| `stopVoice` | 停止播放接口 | `localId` |
-| `uploadVoice` | 上传语音接口 | `localId`, `isShowProgressTips` |
-| `downloadVoice` | 下载语音接口 | `serverId`, `isShowProgressTips` |
-| `translateVoice` | 识别音频并返回识别结果接口 | `localId`, `isShowProgressTips` |
-| `getNetworkType` | 获取网络状态接口 | (none) |
-| `openLocation` | 使用微信内置地图查看位置接口 | `latitude`, `longitude`, `name`, `address`, `scale`, `infoUrl` |
-| `geoLocation` | 获取地理位置接口 | (none) |
-| `hideOptionMenu` | (unknown) | (none) |
-| `showOptionMenu` | (unknown) | (none) |
-| `startMonitoringBeacons` | 开启查找周边 ibeacon 设备接口 | `ticket` |
-| `stopMonitoringBeacons` | 关闭查找周边 ibeacon 设备接口 | (none) |
-| `closeWindow` | 关闭当前网页窗口接口 | (none) |
-| `hideMenuItems` | 批量隐藏功能按钮接口 | `menuList` |
-| `showMenuItems` | 批量显示功能按钮接口 | `menuList` |
-| `hideAllNonBaseMenuItem` | 隐藏所有非基础按钮接口 | (none) |
-| `showAllNonBaseMenuItem` | 显示所有功能按钮接口 | (none) |
-| `scanQRCode` | 调起微信扫一扫接口 | `needResult`, `scanType` |
-| `openProductViewWithPid` | 跳转微信商品页接口 | `pid`, `view_type`, `ext_info` |
-| `batchAddCard` | 批量添加卡券接口 | `card_list` |
-| `chooseCard` | 拉取适用卡券列表并获取用户选择信息 | `app_id`, `location_id`, `sign_type`, `card_id`, `card_type`, `card_sign`, `time_stamp`, `nonce_str` |
-| `batchViewCard` | 查看微信卡包中的卡券接口 | `card_list` |
-| `consumedShareCard` | (unknown) | `consumedCardId`, `consumedCode` |
-| `getBrandWCPayRequest` | 发起一个微信支付请求 | `timeStamp`, `nonceStr`, `package`, `signType`, `paySign` |
-| `editAddress` | 共享收货地址接口 | (none) |
-| `getRecevieBizHongBaoRequest` | (unknown) | (none) |
+| Handler Name                  | Parameters | Official Description |
+| ----------------------------- | --- | --- |
+| `preVerifyJSAPI`              | `verifyJsApiList`, `verifyOpenTagList` | 注入权限验证配置 |
+| `checkJsApi`                  | `jsApiList` | 判断当前客户端版本是否支持指定 JS 接口 |
+| `shareTimeline`               | `title`, `desc`, `img_url`, `link`, `type`, `data_url` | (unknown) |
+| `sendAppMessage`              | `title`, `desc`, `link`, `img_url`, `type`, `data_url` | (unknown) |
+| `shareQQ`                     | `title`, `desc`, `img_url`, `link` | (unknown) |
+| `shareWeiboApp`               | `title`, `desc`, `img_url`, `link` | (unknown) |
+| `shareQZone`                  | `title`, `desc`, `img_url`, `link` | (unknown) |
+| `updateTimelineShareData`     | `title`, `link`, `imgUrl` | 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容 |
+| `updateAppMessageShareData`   | `title`, `desc`, `link`, `imgUrl` | 自定义“分享给朋友”及“分享到QQ”按钮的分享内容 |
+| `startRecord`                 | (none) | 开始录音接口 |
+| `stopRecord`                  | (none) | 停止录音接口 |
+| `playVoice`                   | `localId` | 播放语音接口 |
+| `pauseVoice`                  | `localId` | 暂停播放接口 |
+| `stopVoice`                   | `localId` | 停止播放接口 |
+| `uploadVoice`                 | `localId`, `isShowProgressTips` | 上传语音接口 |
+| `downloadVoice`               | `serverId`, `isShowProgressTips` | 下载语音接口 |
+| `translateVoice`              | `localId`, `isShowProgressTips` | 识别音频并返回识别结果接口 |
+| `chooseImage`                 | `count`, `sizeType`, `sourceType` | 拍照或从手机相册中选图接口 |
+| `imagePreview`                | `current`, `urls` | 预览图片接口 |
+| `uploadImage`                 | `localId`, `isShowProgressTips` | 上传图片接口 |
+| `downloadImage`               | `serverId`, `isShowProgressTips` | 下载图片接口 |
+| `getLocalImgData`             | `localId` | 获取本地图片接口 |
+| `getNetworkType`              | (none) | 获取网络状态接口 |
+| `openLocation`                | `latitude`, `longitude`, `name`, `address`, `scale`, `infoUrl` | 使用微信内置地图查看位置接口 |
+| `geoLocation`                 | (none) | 获取地理位置接口 |
+| `hideOptionMenu`              | (none) | (unknown) |
+| `showOptionMenu`              | (none) | (unknown) |
+| `closeWindow`                 | (none) | 关闭当前网页窗口接口 |
+| `hideMenuItems`               | `menuList` | 批量隐藏功能按钮接口 |
+| `showMenuItems`               | `menuList` | 批量显示功能按钮接口 |
+| `hideAllNonBaseMenuItem`      | (none) | 隐藏所有非基础按钮接口 |
+| `showAllNonBaseMenuItem`      | (none) | 显示所有功能按钮接口 |
+| `scanQRCode`                  | `needResult`, `scanType` | 调起微信扫一扫接口 |
+| `editAddress`                 | (none) | 共享收货地址接口 |
+| `openProductViewWithPid`      | `pid`, `view_type`, `ext_info` | 跳转微信商品页接口 |
+| `batchAddCard`                | `card_list` | 批量添加卡券接口 |
+| `chooseCard`                  | `app_id`, `location_id`, `sign_type`, `card_id`, `card_type`, `card_sign`, `time_stamp`, `nonce_str` | 拉取适用卡券列表并获取用户选择信息 |
+| `batchViewCard`               | `card_list` | 查看微信卡包中的卡券接口 |
+| `consumedShareCard`           | `consumedCardId`, `consumedCode` | (unknown) |
+| `getBrandWCPayRequest`        | `timestamp`, `nonceStr`, `package`, `paySign`, `signType` | 发起一个微信支付请求 |
+| `getRecevieBizHongBaoRequest` | `timestamp`, `nonceStr`, `package`, `paySign`, `signType` | (unknown) |
+| `startMonitoringBeacons`      | `ticket` | 开启查找周边 ibeacon 设备接口 |
+| `stopMonitoringBeacons`       | (none) | 关闭查找周边 ibeacon 设备接口 |
+| `openEnterpriseChat`          | `useridlist`, `chatname` | (unknown) |
+| `launchMiniProgram`           | `targetAppId`, `path`, `envVersion` | 打开小程序 |
+| `openBusinessView`            | `businessType`, `queryString`, `envVersion` | (unknown) |
+| `invokeMiniProgramAPI`        | `name`, `arg` | (unknown) |
 
-### Handlers (JS listens on WebView Bridge)
+### Handlers for JS listening on WebView Bridge
 
-| Handler Name | Official Description |
-| --- | --- |
-| `menu:share:timeline` | 分享到朋友圈 |
-| `menu:share:appmessage` | 分享给朋友 |
-| `menu:share:qq` | 分享到 QQ |
-| `menu:share:weiboApp` | 分享到腾讯微博 |
-| `menu:share:QZone` | 分享到 QQ 空间 |
-| `onVoiceRecordEnd` | 监听录音自动停止接口 |
-| `onVoicePlayEnd` | 监听语音播放完毕接口 |
-| `onBeaconsInRange` | 监听周边 ibeacon 设备接口 |
+| Handler Name            | Official Description |
+| ----------------------- | --- |
+| `menu:share:timeline`   | 监听“分享到朋友圈”按钮点击 |
+| `menu:share:appmessage` | 监听“分享给朋友”按钮点击 |
+| `menu:share:qq`         | 监听“分享到 QQ”按钮点击 |
+| `menu:share:weiboApp`   | 监听“分享到腾讯微博”按钮点击 |
+| `menu:share:QZone`      | 监听“分享到 QQ 空间”按钮点击 |
+| `onVoiceRecordEnd`      | 监听录音自动停止接口 |
+| `onVoicePlayEnd`        | 监听语音播放完毕接口 |
+| `onBeaconsInRange`      | 监听周边 ibeacon 设备接口 |
 
 ## License
 

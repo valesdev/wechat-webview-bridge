@@ -1,6 +1,6 @@
 const fs = require('fs')
 const rollup = require('rollup')
-const buble = require('rollup-plugin-buble')
+const buble = require('@rollup/plugin-buble')
 const terser = require('terser')
 const pkg = require('./package.json')
 
@@ -10,6 +10,12 @@ const banner =
   ` * @link ${pkg.homepage}\n` +
   ` */`
 
+const configs = [
+  { format: 'cjs', suffix: '.cjs' },
+  { format: 'es', suffix: '.es' },
+  { format: 'umd', suffix: '' }
+]
+
 rollup.rollup({
   input: 'src/index.js',
   plugins: [
@@ -17,12 +23,6 @@ rollup.rollup({
   ]
 })
   .then(bundle => {
-    const configs = [
-      { format: 'cjs', suffix: '.cjs' },
-      { format: 'es', suffix: '.es' },
-      { format: 'umd', suffix: '' }
-    ]
-
     let index = 0
     const next = () => {
       return bundle.generate({
@@ -40,7 +40,6 @@ rollup.rollup({
           }
         })
     }
-
     next()
   })
   .catch(error => {
