@@ -1,6 +1,2 @@
-.DS_Store
-
 .editorconfig
-.browserslistrc
-
-/build.js
+tsconfig.json

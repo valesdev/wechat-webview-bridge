@@ -1,10 +1,17 @@
 {
   "name": "wechat-webview-bridge",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A substitute for the official WeChat JS-SDK library.",
-  "main": "dist/wechat-webview-bridge.es.js",
+  "type": "module",
+  "source": "lib/index.ts",
+  "main": "dist/wechat-webview-bridge.cjs",
+  "module": "dist/wechat-webview-bridge.esm.js",
+  "umd:main": "dist/wechat-webview-bridge.umd.js",
+  "unpkg": "dist/wechat-webview-bridge.umd.js",
+  "jsdelivr": "dist/wechat-webview-bridge.umd.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "node build.js"
+    "build": "microbundle --entry lib/index.ts --format esm,cjs,umd --name WeChatWebViewBridge"
   },
   "repository": {
     "type": "git",
@@ -20,8 +27,6 @@
     "WeChat"
   ],
   "devDependencies": {
-    "@rollup/plugin-buble": "^0.21.3",
-    "rollup": "^2.17.1",
-    "terser": "^4.8.0"
+    "microbundle": "^0.15.1"
   }
 }

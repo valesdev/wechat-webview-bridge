@@ -8,17 +8,17 @@ A substitute for the official WeChat JS-SDK library, rewritten from `https://res
 
 ## Quick Start
 
-```js
+```ts
 import axios from 'axios'
-import WeChatWebViewBridge from 'wechat-webview-bridge'
+import WeChatWebViewBridge, { type ConfigData } from 'wechat-webview-bridge'
 
 /**
  * Function to request WeChat JS-SDK configuration parameters.
  *
  * @var Function
  */
-const configHandler = async function ({ url }) {
-  return axios.post('/wechat-jssdk-config', { url })
+const configHandler = async function ({ url }: { url: string }): ConfigData {
+  return axios.post('/url/to/wechat-jssdk-config', { url })
     .then(res => {
       return {
         appId: res.appId,
@@ -34,7 +34,7 @@ const configHandler = async function ({ url }) {
  *
  * @var Array
  */
-const apiList = [
+const jsApiList = [
   'menu:share:timeline',
   'menu:share:appmessage',
   'imagePreview',
@@ -45,57 +45,59 @@ const apiList = [
 ]
 
 /**
+ * List of WeChat Open Tag you want to grant.
+ *
+ * @var Array
+ */
+const openTagList = [
+  'wx-open-launch-app'
+]
+
+/**
  * The bridge instance.
  *
  * @var WeChatWebViewBridge
  */
 const bridge = new WeChatWebViewBridge({
   configHandler,
-  apiList,
+  jsApiList,
+  openTagList,
   debug: true
 })
 
 // wait for WebView bridge initialized
 await bridge.load()
+  .then(() => bridge.config())
   .then(() => {
-    // listen on WeChat Timeline Share event
-    return bridge.on({
-      handlerName: 'menu:share:timeline',
-      listener () {
-        // invoke registration of sharing
-        bridge.invoke({
-          handlerName: 'shareTimeline',
-          params: {
-            title: 'The Title Goes Here',
-            desc: 'The description goes here',
-            img_url: 'https://www.example.com/image.jpeg',
-            link: window.location.href,
-            type: 'link',
-            data_url: ''
-          }
+    // example: listen on WeChat Timeline Share event
+    return bridge.on('menu:share:timeline', () => {
+      // invoke registration of sharing
+      bridge.invoke('shareTimeline', {
+        title: 'The Title Goes Here',
+        desc: 'The description goes here',
+        img_url: 'https://www.example.com/image.jpeg',
+        link: window.location.href,
+        type: 'link',
+        data_url: ''
+      })
+        .then(data => {
+          // successfully shared
         })
-          .then(data => {
-            // successfully shared
-          })
-          .catch(error => {
-            if (error.message === 'cancel') {
-              // user cancelled
-              return
-            }
-            // any other reasons
-          })
-      }
+        .catch(error => {
+          if (error.message === 'cancel') {
+            // user cancelled
+            return
+          }
+          // any other reasons
+        })
     })
   })
   .then(() => {
-    // invoke hiding custom menu items
-    return bridge.invoke({
-      handlerName: 'hideMenuItems',
-      params: {
-        menuList: [
-          'menuItem:share:facebook'
-        ]
-      }
+    // example: invoke hiding custom menu items
+    return bridge.invoke('hideMenuItems', {
+      menuList: [
+        'menuItem:share:facebook'
+      ]
     })
   })
 ```
@@ -106,10 +108,10 @@ await bridge.load()
 
 | Parameter | Type | Description | Default |
 | --- | --- | --- | --- |
-| `options` | object | | |
-| `options.configHandler` | function | Function to request WeChat JS-SDK configuration parameters. It should return a Promise and resolves with an object contains WeChat configuration parameters (`appId`, `timestamp`, `nonceStr` and `signature`). | (required) |
-| `options.apiList` | array | List of WeChat JS-SDK API names you want to grant. | `[]` |
-| `options.debug` | bool | Enable console debug output. | `false` |
+| `options.configHandler` | ({ url } : { url: string }) => ConfigData | Function to request WeChat JS-SDK configuration parameters. It should return a Promise and resolves with an object contains WeChat configuration parameters (`appId`, `timestamp`, `nonceStr` and `signature`). | (required) |
+| `options.jsApiList` | Array&lt;string&gt; | List of WeChat JS-SDK API names you want to grant. | `[]` |
+| `options.openTagList` | Array&lt;string&gt; | List of WeChat Open Tag you want to grant. | `[]` |
+| `options.debug` | boolean | Enable console debug output. | `false` |
 
 ### `bridge.load()`
 
@@ -165,43 +167,43 @@ Get whether WeChat WebView bridge was successfully configured before.
 
 - Returns: `boolean`
 
-### `bridge.isIOS`
+### `WeChatWebViewBridge.isIOS`
 
 Whether we are in an iOS device.
 
 - Returns: `boolean`
 
-### `bridge.isAndroid`
+### `WeChatWebViewBridge.isAndroid`
 
 Whether we are in an Android device.
 
 - Returns: `boolean`
 
-### `bridge.isWeChat`
+### `WeChatWebViewBridge.isWeChat`
 
 Whether we are in a WeChat WebView.
 
 - Returns: `boolean`
 
-### `bridge.isWeChatBrowser`
+### `WeChatWebViewBridge.isWeChatBrowser`
 
 Whether we are in a WeChat Browser.
 
 - Returns: `boolean`
 
-### `bridge.isWeChatMiniProgram`
+### `WeChatWebViewBridge.isWeChatMiniProgram`
 
 Whether we are in a WeChat Mini Program.
 
 - Returns: `boolean`
 
-### `bridge.isWeChatDevTools`
+### `WeChatWebViewBridge.isWeChatDevTools`
 
 Whether we are in a WeChat Dev Tools.
 
 - Returns: `boolean`
 
-### Handlers for JS calling WebView Bridge
+## Handlers for JS calling WebView Bridge
 
 | Handler Name                  | Parameters | Official Description |
 | ----------------------------- | --- | --- |
@@ -253,7 +255,7 @@ Whether we are in a WeChat Dev Tools.
 | `openBusinessView`            | `businessType`, `queryString`, `envVersion` | (unknown) |
 | `invokeMiniProgramAPI`        | `name`, `arg` | (unknown) |
 
-### Handlers for JS listening on WebView Bridge
+## Handlers for JS listening on WebView Bridge
 
 | Handler Name            | Official Description |
 | ----------------------- | --- |
